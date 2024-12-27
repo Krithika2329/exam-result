@@ -8,7 +8,7 @@ const fs = require('fs');
 const app = express();
 const bst = new BinarySearchTree();
 
-// Connect to MongoDB
+
 mongoose.connect('mongodb+srv://abhijnarao11:abhi1128@cluster0.dmdrozp.mongodb.net/', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -18,14 +18,13 @@ mongoose.connect('mongodb+srv://abhijnarao11:abhi1128@cluster0.dmdrozp.mongodb.n
     console.error('Failed to connect to MongoDB', err);
 });
 
-// Middleware to parse JSON
+
 app.use(express.json());
 
-// Helper function to write to a log file
-function logToFile(message) {
-    const logFilePath = 'student_log.txt'; // Path to the log file
 
-    // Append message to the log file
+function logToFile(message) {
+    const logFilePath = 'student_log.txt'; 
+    
     fs.appendFile(logFilePath, message + '\n', (err) => {
         if (err) {
             console.error('Error writing to log file', err);
@@ -36,7 +35,7 @@ function logToFile(message) {
 }
 
 
-// POST endpoint to add a new student
+
 app.post('/students', async (req, res) => {
     try {
         const { name, id, score } = req.body;
@@ -45,21 +44,21 @@ app.post('/students', async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields (name, id, score)' });
         }
         
-        // Check if student with the given ID already exists
+       
         const existingStudent = await Student.findOne({ id });
         if (existingStudent) {
             return res.status(400).json({ message: `Student with ID ${id} already exists` });
         }
 
-        // Create and save the new student
+      
         const newStudent = new Student({ name, id, score });
         await newStudent.save();
 
-        // Log student data to a text file
-        const logMessage = `New student added: ID = ${id}, Name = ${name}, Score = ${score}`;
-        logToFile(logMessage);  // Call the helper function to log the data
         
-        res.status(201).json(newStudent);  // Respond with the created student
+        const logMessage = `New student added: ID = ${id}, Name = ${name}, Score = ${score}`;
+        logToFile(logMessage);  
+        
+        res.status(201).json(newStudent);  
     } catch (err) {
         res.status(500).json({ message: 'Error adding student', error: err });
     }
@@ -67,43 +66,43 @@ app.post('/students', async (req, res) => {
 
 
 
-// Endpoint to get all students sorted by score
+
 app.get('/students', async (req, res) => {
     try {
-        const students = await Student.find().sort({ score: -1 }); // Sort students by score (descending)
+        const students = await Student.find().sort({ score: -1 }); 
         res.json(students);
     } catch (err) {
         res.status(500).json({ message: 'Error fetching students', error: err });
     }
 });
 
-// Endpoint to search for a student by ID
-app.get('/students/search/:id', async (req, res) => {
+
+app.get('/students/:id', async (req, res) => {
     try {
-        const student = await Student.findOne({ id: req.params.id });
-        if (student) {
-            res.json(student);
-        } else {
-            res.status(404).json({ message: 'Student not found' });
+        const studentId = req.params.id;
+        const student = await Student.findOne({ id: studentId });
+        if (!student) {
+            return res.status(404).json({ message: `Student with ID ${studentId} not found` });
         }
+        res.status(200).json(student);
     } catch (err) {
-        res.status(500).json({ message: 'Error fetching student', error: err });
+        res.status(500).json({ message: 'Error retrieving student', error: err });
     }
 });
 
-// Endpoint to insert students into BST for rank sorting
+
 app.get('/students/rank', async (req, res) => {
     try {
         const students = await Student.find().sort({ score: -1 });
-        students.forEach(student => bst.insert(student)); // Insert students into BST
-        const rankedStudents = bst.inorder(bst.root); // Get students sorted by score
+        students.forEach(student => bst.insert(student)); 
+        const rankedStudents = bst.inorder(bst.root); 
         res.json(rankedStudents);
     } catch (err) {
         res.status(500).json({ message: 'Error processing students for rank', error: err });
     }
 });
 
-// POST endpoint to add a new student
+
 app.post('/students', async (req, res) => {
     try {
         const { name, id, score } = req.body;
@@ -113,13 +112,13 @@ app.post('/students', async (req, res) => {
 
         const newStudent = new Student({ name, id, score });
         await newStudent.save();
-        res.status(201).json(newStudent);  // Respond with the created student
+        res.status(201).json(newStudent);  
     } catch (err) {
         res.status(500).json({ message: 'Error adding student', error: err });
     }
 });
 
-// Start the server
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

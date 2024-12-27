@@ -50,7 +50,7 @@ class BinarySearchTree {
         return result;
     }
 
-    // Search for a student by ID (this can be optimized or adjusted as needed)
+    // Search for a student by ID
     searchById(id) {
         return this.searchByIdHelper(this.root, id);
     }

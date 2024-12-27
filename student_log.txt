@@ -4,3 +4,4 @@ New student added: ID = 20, Name = abhi, Score = 60
 New student added: ID = 21, Name = krithi, Score = 99
 New student added: ID = 22, Name = shree, Score = 99
 New student added: ID = 24, Name = dddd, Score = 89
+New student added: ID = 12345, Name = John Doe, Score = 85
